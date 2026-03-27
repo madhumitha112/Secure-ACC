@@ -30,12 +30,8 @@ jobs:
 
       - name: Run flake8 lint check
         run: |
-          if [ "$(find src/ -name '*.py' | head -1)" ]; then
-            flake8 src/ --max-line-length=100 --ignore=E302,W503
-            echo "Lint passed"
-          else
-            echo "No Python files yet — skipping lint"
-          fi
+          flake8 src/ --max-line-length=100 --ignore=E302,W503
+          echo "Lint passed"
 
   # ── Stage 2: Test ──────────────────────────────────────────
   test:
@@ -57,12 +53,8 @@ jobs:
 
       - name: Run unit tests
         run: |
-          if [ "$(find src/tests/ -name '*.py' 2>/dev/null | head -1)" ]; then
-            pytest src/tests/ -v --tb=short
-            echo "All tests passed"
-          else
-            echo "No test files yet — skipping tests"
-          fi
+          pytest src/tests/ -v --tb=short
+          echo "All tests passed"
 
   # ── Stage 3: Simulate ──────────────────────────────────────
   simulate:
@@ -84,15 +76,11 @@ jobs:
 
       - name: Run full simulation
         run: |
-          if [ -f src/main.py ]; then
-            python src/main.py
-            echo "Simulation completed"
-          else
-            echo "main.py not yet created — skipping simulation"
-          fi
+          python src/main.py
+          echo "Simulation completed"
 
       - name: Upload simulation results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: simulation-results
           path: results/
@@ -104,7 +92,7 @@ jobs:
     needs: simulate
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download simulation results
         uses: actions/download-artifact@v4
@@ -115,5 +103,5 @@ jobs:
       - name: Verify result files exist
         run: |
           echo "Checking simulation outputs..."
-          ls results/ 2>/dev/null || echo "No results yet — pipeline structure verified"
+          ls results/
           echo "Pipeline complete — all stages passed"
