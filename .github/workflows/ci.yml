@@ -1,0 +1,107 @@
+# Secure-ACC CI Pipeline
+# Mirrors a Tier-1 automotive software pipeline with 4 stages:
+# lint → test → simulate → report
+
+name: Secure-ACC CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  # ── Stage 1: Lint ──────────────────────────────────────────
+  lint:
+    name: "Stage 1 — Lint"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install linter
+        run: pip install flake8
+
+      - name: Run flake8 lint check
+        run: |
+          flake8 src/ --max-line-length=100 --ignore=E302,W503
+          echo "Lint passed"
+
+  # ── Stage 2: Test ──────────────────────────────────────────
+  test:
+    name: "Stage 2 — Test"
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          pip install pytest matplotlib numpy
+
+      - name: Run unit tests
+        run: |
+          pytest src/tests/ -v --tb=short
+          echo "All tests passed"
+
+  # ── Stage 3: Simulate ──────────────────────────────────────
+  simulate:
+    name: "Stage 3 — Simulate"
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          pip install matplotlib numpy
+
+      - name: Run full simulation
+        run: |
+          python src/main.py
+          echo "Simulation completed"
+
+      - name: Upload simulation results
+        uses: actions/upload-artifact@v3
+        with:
+          name: simulation-results
+          path: results/
+
+  # ── Stage 4: Report ────────────────────────────────────────
+  report:
+    name: "Stage 4 — Report"
+    runs-on: ubuntu-latest
+    needs: simulate
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download simulation results
+        uses: actions/download-artifact@v3
+        with:
+          name: simulation-results
+          path: results/
+
+      - name: Verify result files exist
+        run: |
+          echo "Checking simulation outputs..."
+          ls results/
+          echo "Pipeline complete — all stages passed"
