@@ -61,12 +61,15 @@ class VehicleModel:
             "acceleration": round(self.acceleration, 3)
         }
 
+
     # ── Quick test (remove before final submission) ────────────
 if __name__ == "__main__":
     print("--- Vehicle Model Test ---")
     car = VehicleModel(initial_velocity=0.0)
 
-    print(f"{'Step':<6} {'Velocity (m/s)':<16} {'Velocity (kmh)':<16} {'Position (m)':<14} {'Acceleration'}")
+    header = f"{'Step':<6} {'Velocity (m/s)':<16} {'Velocity (kmh)':<16}"
+    header += f" {'Position (m)':<14} {'Acceleration'}"
+    print(header)
     print("-" * 70)
 
     for step in range(20):
