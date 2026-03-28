@@ -55,10 +55,10 @@ class VehicleModel:
     def get_state(self):
         """Return current vehicle state as a dictionary"""
         return {
-            "velocity_ms":   round(self.velocity, 3),
-            "velocity_kmh":  round(self.velocity * 3.6, 3),
-            "position_m":    round(self.position, 3),
-            "acceleration":  round(self.acceleration, 3)
+            "velocity_ms": round(self.velocity, 3),
+            "velocity_kmh": round(self.velocity * 3.6, 3),
+            "position_m": round(self.position, 3),
+            "acceleration": round(self.acceleration, 3)
         }
 
     # ── Quick test (remove before final submission) ────────────
@@ -73,4 +73,9 @@ if __name__ == "__main__":
         car.update(throttle_pct=50, brake_pct=0)
         s = car.get_state()
         print(
-            f"{step:<6} {s['velocity_ms']:<16} {s['velocity_kmh']:<16} {s['position_m']:<14} {s['acceleration']}")
+            f"{
+                step:<6} {
+                s['velocity_ms']:<16} {
+                s['velocity_kmh']:<16} {
+                    s['position_m']:<14} {
+                        s['acceleration']}")

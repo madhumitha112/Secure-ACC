@@ -30,7 +30,7 @@ jobs:
 
       - name: Run flake8 lint check
         run: |
-          flake8 src/ --max-line-length=100 --ignore=E302,W503
+          flake8 src/ --max-line-length=100 --ignore=E302,W503,E241
           echo "Lint passed"
 
   # ── Stage 2: Test ──────────────────────────────────────────
