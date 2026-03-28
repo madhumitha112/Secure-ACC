@@ -37,8 +37,8 @@ class VehicleModel:
         """
         # Convert percentages to forces
         throttle_force = (throttle_pct / 100) * MAX_THROTTLE_FORCE
-        brake_force    = (brake_pct / 100) * MAX_BRAKE_FORCE
-        drag_force     = self.compute_drag()
+        brake_force = (brake_pct / 100) * MAX_BRAKE_FORCE
+        drag_force = self.compute_drag()
 
         # Newton's second law
         f_net = throttle_force - brake_force - drag_force
@@ -60,8 +60,6 @@ class VehicleModel:
             "position_m":    round(self.position, 3),
             "acceleration":  round(self.acceleration, 3)
         }
-    
-
 
     # ── Quick test (remove before final submission) ────────────
 if __name__ == "__main__":
@@ -74,4 +72,5 @@ if __name__ == "__main__":
     for step in range(20):
         car.update(throttle_pct=50, brake_pct=0)
         s = car.get_state()
-        print(f"{step:<6} {s['velocity_ms']:<16} {s['velocity_kmh']:<16} {s['position_m']:<14} {s['acceleration']}")
+        print(
+            f"{step:<6} {s['velocity_ms']:<16} {s['velocity_kmh']:<16} {s['position_m']:<14} {s['acceleration']}")
