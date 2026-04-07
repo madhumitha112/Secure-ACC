@@ -114,3 +114,83 @@ def run_simulation(use_security=True, inject_attack=False):
         })
 
     return results
+
+def print_results(results, scenario_name):
+    """Print simulation results in a readable table"""
+    print(f"\n{'='*60}")
+    print(f"SCENARIO: {scenario_name}")
+    print(f"{'='*60}")
+    print(f"{'Step':<6} {'Time':<6} {'Ego km/h':<10} "
+          f"{'Distance':<10} {'Throttle':<10} {'Brake':<8} {'Status'}")
+    print("-" * 60)
+
+    for r in results:
+        status = ""
+        if r["attack_active"] and not r["msg_accepted"]:
+            status = "BLOCKED"
+        elif r["attack_active"] and r["msg_accepted"]:
+            status = "ATTACKED"
+        elif r["brake_pct"] > 50:
+            status = "BRAKING"
+
+        print(f"{r['step']:<6} {r['time_s']:<6} "
+              f"{r['ego_velocity_kmh']:<10} "
+              f"{r['distance_m']:<10} "
+              f"{r['throttle_pct']:<10} "
+              f"{r['brake_pct']:<8} {status}")
+
+
+if __name__ == "__main__":
+    print("\n" + "="*60)
+    print("SECURE-ACC ATTACK SIMULATION")
+    print("="*60)
+
+    # Scenario 1 - Normal operation, no attack
+    print("\nRunning Scenario 1: Normal operation...")
+    results_normal = run_simulation(
+        use_security=False,
+        inject_attack=False
+    )
+    print_results(results_normal, "Normal Operation (no attack)")
+
+    # Scenario 2 - Attack WITHOUT security
+    print("\nRunning Scenario 2: Attack without security...")
+    results_attacked = run_simulation(
+        use_security=False,
+        inject_attack=True
+    )
+    print_results(results_attacked, "Under Attack — NO Security")
+
+    # Scenario 3 - Attack WITH security
+    print("\nRunning Scenario 3: Attack with security enabled...")
+    results_secured = run_simulation(
+        use_security=True,
+        inject_attack=True
+    )
+    print_results(results_secured, "Under Attack — WITH Security")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("SUMMARY")
+    print(f"{'='*60}")
+
+    # Check if attack caused emergency brake in scenario 2
+    attacked_braking = [r for r in results_attacked
+                        if r["brake_pct"] == 100.0
+                        and r["attack_active"]]
+
+    # Check if security blocked attack in scenario 3
+    blocked = [r for r in results_secured
+               if r["attack_active"]
+               and not r["msg_accepted"]]
+
+    print(f"Scenario 2 — Emergency brakes triggered: "
+          f"{len(attacked_braking)} times")
+    print(f"Scenario 3 — Attack messages blocked   : "
+          f"{len(blocked)} times")
+
+    if len(attacked_braking) > 0 and len(blocked) > 0:
+        print("\n✓ Attack successfully demonstrated")
+        print("✓ Security layer successfully mitigated attack")
+    else:
+        print("\n⚠ Check simulation parameters")
